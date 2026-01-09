@@ -52,7 +52,7 @@ const I18N = {
     statusOpen: (cat) => `ℹ️ Статус: ОТКРЫТО\nКатегория: ${cat || "—"}`,
     statusNone: "ℹ️ Открытых обращений нет.",
     faqText: "FAQ:\n• Опиши проблему конкретно\n• Скрины/логи помогают\n• Ответ придёт сюда",
-    contactsText: "Контакты:\n• Поддержка — через этого бота\n• (добавь свои контакты сюда)"
+    contactsText: "Контакты:\n• Поддержка — через этого бота"
   },
   en: {
     chooseLangTitle: "Choose language:",
@@ -82,7 +82,7 @@ const I18N = {
     statusOpen: (cat) => `ℹ️ Status: OPEN\nCategory: ${cat || "—"}`,
     statusNone: "ℹ️ No open tickets.",
     faqText: "FAQ:\n• Describe the issue clearly\n• Screenshots/logs help\n• We’ll reply here",
-    contactsText: "Contacts:\n• Support — via this bot\n• (add your contacts here)"
+    contactsText: "Contacts:\n• Support — via this bot"
   }
 };
 
