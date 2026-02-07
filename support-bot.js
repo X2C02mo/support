@@ -16,10 +16,10 @@ const ADMIN_IDS = new Set(
 if (!process.env.SUPPORT_BOT_TOKEN) throw new Error("SUPPORT_BOT_TOKEN missing");
 if (!Number.isFinite(SUPPORT_CHAT_ID)) throw new Error("SUPPORT_GROUP_ID must be a number");
 
-const PREFIX = "sb:v2:"; // оставляем v2, чтобы не ломать текущие тикеты
-const TTL_TICKET = 60 * 60 * 24 * 14; // 14 дней
-const TTL_LANG = 60 * 60 * 24 * 365;  // 1 год
-const TTL_FLOW = 60 * 15;             // 15 минут
+const PREFIX = "sb:v2:"; 
+const TTL_TICKET = 60 * 60 * 24 * 14; 
+const TTL_LANG = 60 * 60 * 24 * 365; 
+const TTL_FLOW = 60 * 15;             
 
 const START_RE = /^\/start(?:@\w+)?(?:\s|$)/i;
 
