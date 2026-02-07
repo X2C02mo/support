@@ -3,7 +3,7 @@
   "private": true,
   "type": "commonjs",
   "engines": {
-    "node": "20.x"
+    "node": "24.x"
   },
   "dependencies": {
     "@upstash/redis": "^1.34.0",
