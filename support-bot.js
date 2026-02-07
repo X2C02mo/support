@@ -1,4 +1,3 @@
-// support-bot.js (CommonJS)
 const { Telegraf, Markup } = require("telegraf");
 const { createStore } = require("./store");
 
@@ -16,18 +15,18 @@ const ADMIN_IDS = new Set(
 if (!process.env.SUPPORT_BOT_TOKEN) throw new Error("SUPPORT_BOT_TOKEN missing");
 if (!Number.isFinite(SUPPORT_CHAT_ID)) throw new Error("SUPPORT_GROUP_ID must be a number");
 
-const PREFIX = "sb:v2:"; 
-const TTL_TICKET = 60 * 60 * 24 * 14; 
-const TTL_LANG = 60 * 60 * 24 * 365; 
-const TTL_FLOW = 60 * 15;             
+const PREFIX = "sb:v2:";
+const TTL_TICKET = 60 * 60 * 24 * 14;
+const TTL_LANG = 60 * 60 * 24 * 365;
+const TTL_FLOW = 60 * 15;
 
 const START_RE = /^\/start(?:@\w+)?(?:\s|$)/i;
 
 const I18N = {
   ru: {
+    menuHeader: "Это бот поддержки для @CalculatorTraderBot, @realChalov\nВыберите действие:",
     chooseLangTitle: "Выберите язык:",
     chooseLangHint: "Язык можно сменить позже в меню.",
-    menuTitle: "Выберите действие:",
     create: "🆘 Создать обращение",
     faq: "📌 FAQ",
     status: "ℹ️ Статус",
@@ -54,9 +53,9 @@ const I18N = {
     contactsText: "Контакты:\n• Поддержка — через этого бота"
   },
   en: {
+    menuHeader: "This is a support bot for @CalculatorTraderBot, @realChalov\nChoose an action:",
     chooseLangTitle: "Choose language:",
     chooseLangHint: "You can change it later in the menu.",
-    menuTitle: "Choose an action:",
     create: "🆘 Create ticket",
     faq: "📌 FAQ",
     status: "ℹ️ Status",
@@ -72,14 +71,14 @@ const I18N = {
     cat_biz: "🤝 Partnership",
     cat_other: "❓ Other",
     askOne: "OK. Send ONE message describing the issue (text/photo/file).",
-    alreadyOpen: "You already have an open ticket. Just message me — I’ll forward it to support.",
+    alreadyOpen: "You already have an open ticket. Just message me — I'll forward it to support.",
     sent: "✅ Sent to support.",
     sendFail: "⚠️ Failed to send. Please try again.",
     created: "✅ Ticket created. Message me here — I will forward to support.",
     closed: "✅ Ticket closed.",
     statusOpen: (cat) => `ℹ️ Status: OPEN\nCategory: ${cat || "—"}`,
     statusNone: "ℹ️ No open tickets.",
-    faqText: "FAQ:\n• Describe the issue clearly\n• Screenshots/logs help\n• We’ll reply here",
+    faqText: "FAQ:\n• Describe the issue clearly\n• Screenshots/logs help\n• We'll reply here",
     contactsText: "Contacts:\n• Support — via this bot"
   }
 };
@@ -100,27 +99,20 @@ function createSupportBot() {
 
   const key = {
     dedup: (updateId) => `${PREFIX}dedup:${updateId}`,
-    // lang: Храним ТОЛЬКО как объект {lang:"en"} для стабильности
     lang: (uid) => `${PREFIX}lang:${uid}`,
-    flow: (uid) => `${PREFIX}flow:${uid}`,       // {mode:"AWAIT", category}
-    pending: (uid) => `${PREFIX}pending:${uid}`, // {screen, category}
-    ticket: (uid) => `${PREFIX}ticket:${uid}`,   // {status, threadId, category, lang}
-    threadMap: (threadId) => `${PREFIX}thread:${SUPPORT_CHAT_ID}:${threadId}` // {userId}
+    flow: (uid) => `${PREFIX}flow:${uid}`,
+    pending: (uid) => `${PREFIX}pending:${uid}`,
+    ticket: (uid) => `${PREFIX}ticket:${uid}`,
+    threadMap: (threadId) => `${PREFIX}thread:${SUPPORT_CHAT_ID}:${threadId}`
   };
 
   const isPrivate = (ctx) => ctx.chat?.type === "private";
   const isSupportGroup = (ctx) => ctx.chat?.id === SUPPORT_CHAT_ID;
 
-  // ✅ супер-устойчивое чтение языка из любых старых форматов
   async function getLang(uid) {
     const v = await store.getJson(key.lang(uid));
-    // 1) прям строка
     if (v === "en" || v === "ru") return v;
-
-    // 2) объект
     if (v && typeof v === "object" && (v.lang === "en" || v.lang === "ru")) return v.lang;
-
-    // 3) строка, которая сама содержит JSON
     if (typeof v === "string") {
       const s = v.trim();
       if (s === "en" || s === "ru") return s;
@@ -130,7 +122,6 @@ function createSupportBot() {
         if (p && typeof p === "object" && (p.lang === "en" || p.lang === "ru")) return p.lang;
       } catch {}
     }
-
     return null;
   }
 
@@ -214,13 +205,11 @@ function createSupportBot() {
     }
   }
 
-  // ✅ показываем выбор языка БЕЗ спама: в callback — пытаемся edit, иначе reply
   async function showLangPicker(ctx, pending) {
     if (!ctx.from) return;
     if (pending) await store.setJson(key.pending(ctx.from.id), pending, TTL_FLOW);
 
     const text = `${I18N.en.chooseLangTitle}\n${I18N.en.chooseLangHint}`;
-
 
     if (ctx.updateType === "callback_query") {
       await ctx.editMessageText(text, kbLang()).catch(async () => ctx.reply(text, kbLang()));
@@ -229,7 +218,6 @@ function createSupportBot() {
     }
   }
 
-  // Dedup (Telegram retries)
   bot.use(async (ctx, next) => {
     const id = ctx.update?.update_id;
     if (!id) return next();
@@ -238,7 +226,6 @@ function createSupportBot() {
     return next();
   });
 
-  // /start — всегда сбрасываем flow и показываем язык
   async function onStart(ctx) {
     if (!isPrivate(ctx) || !ctx.from) return;
     await store.del(key.flow(ctx.from.id));
@@ -248,13 +235,11 @@ function createSupportBot() {
   bot.start(onStart);
   bot.hears(START_RE, onStart);
 
-  // callback_query
   bot.on("callback_query", async (ctx) => {
     const uid = ctx.from.id;
     const data = ctx.callbackQuery.data || "";
     await ctx.answerCbQuery().catch(() => {});
 
-    // язык выбираем всегда
     if (data.startsWith("LANG:")) {
       const chosen = data.endsWith("en") ? "en" : "ru";
       await setLang(uid, chosen);
@@ -262,7 +247,6 @@ function createSupportBot() {
       const pending = await store.getJson(key.pending(uid));
       await store.del(key.pending(uid));
 
-      // если был шаг "жду сообщение" — возвращаем туда
       if (pending?.screen === "ASK_ONE") {
         await store.setJson(key.flow(uid), { mode: "AWAIT", category: pending.category || "other" }, TTL_FLOW);
         return ctx.editMessageText(t(chosen, "askOne"), kbCancel(chosen)).catch(async () => {
@@ -270,16 +254,13 @@ function createSupportBot() {
         });
       }
 
-      // иначе меню
-      return ctx.editMessageText(`${t(chosen, "menuTitle")}\n${t(chosen, "menuIntro")}`, kbMenu(chosen)).catch(async () => {
-        await ctx.reply(`${t(chosen, "menuTitle")}\n${t(chosen, "menuIntro")}`, kbMenu(chosen));
+      return ctx.editMessageText(t(chosen, "menuHeader"), kbMenu(chosen)).catch(async () => {
+        await ctx.reply(t(chosen, "menuHeader"), kbMenu(chosen));
       });
     }
 
-    // всё остальное — только если язык есть
     const lang = await getLang(uid);
     if (!lang) {
-      // запоминаем, куда хотел
       if (data.startsWith("U:CAT:")) return showLangPicker(ctx, { screen: "ASK_ONE", category: data.split(":")[2] || "other" });
       return showLangPicker(ctx, { screen: "MENU" });
     }
@@ -291,8 +272,8 @@ function createSupportBot() {
     }
 
     if (data === "U:HOME") {
-      return ctx.editMessageText(`${t(lang, "menuTitle")}\n${t(lang, "menuIntro")}`, kbMenu(lang)).catch(async () => {
-        await ctx.reply(`${t(lang, "menuTitle")}\n${t(lang, "menuIntro")}`, kbMenu(lang));
+      return ctx.editMessageText(t(lang, "menuHeader"), kbMenu(lang)).catch(async () => {
+        await ctx.reply(t(lang, "menuHeader"), kbMenu(lang));
       });
     }
 
@@ -372,12 +353,9 @@ function createSupportBot() {
     }
   });
 
-  // message handler
   bot.on("message", async (ctx) => {
-    // ✅ если пользователь пишет /start — не даём общему хендлеру отработать (иначе “меню + язык”)
     if (isPrivate(ctx) && ctx.message?.text && START_RE.test(ctx.message.text)) return;
 
-    // A) support group -> user
     if (isSupportGroup(ctx)) {
       const msg = ctx.message;
       const threadId = msg.message_thread_id;
@@ -395,7 +373,6 @@ function createSupportBot() {
       return;
     }
 
-    // B) private
     if (!isPrivate(ctx) || !ctx.from) return;
 
     const uid = ctx.from.id;
@@ -445,7 +422,7 @@ function createSupportBot() {
       return;
     }
 
-    await ctx.reply(`${t(lang, "menuTitle")}\n${t(lang, "menuIntro")}`, kbMenu(lang));
+    await ctx.reply(t(lang, "menuHeader"), kbMenu(lang));
   });
 
   bot.catch((err) => {
