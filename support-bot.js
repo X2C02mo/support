@@ -56,7 +56,7 @@ const I18N = {
   en: {
     chooseLangTitle: "Choose language:",
     chooseLangHint: "You can change it later in the menu.",
-    menuIntro: "Choose an action:",
+    menuTitle: "Choose an action:",
     create: "🆘 Create ticket",
     faq: "📌 FAQ",
     status: "ℹ️ Status",
