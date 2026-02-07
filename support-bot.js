@@ -27,7 +27,6 @@ const I18N = {
   ru: {
     chooseLangTitle: "Выберите язык:",
     chooseLangHint: "Язык можно сменить позже в меню.",
-    menuTitle: "Меню поддержки:",
     menuIntro: "Выберите действие:",
     create: "🆘 Создать обращение",
     faq: "📌 FAQ",
@@ -57,7 +56,6 @@ const I18N = {
   en: {
     chooseLangTitle: "Choose language:",
     chooseLangHint: "You can change it later in the menu.",
-    menuTitle: "Support menu:",
     menuIntro: "Choose an action:",
     create: "🆘 Create ticket",
     faq: "📌 FAQ",
