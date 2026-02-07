@@ -24,7 +24,7 @@ const START_RE = /^\/start(?:@\w+)?(?:\s|$)/i;
 
 const I18N = {
   ru: {
-    menuHeader: "Это бот поддержки @CalculatorTraderBot | @realChalov\n\nВыберите действие:",
+    menuHeader: "Это бот поддержки @CalculatorTraderBot\n\nВыберите действие:",
     chooseLangTitle: "Выберите язык:",
     chooseLangHint: "Язык можно сменить позже в меню.",
     create: "🆘 Создать обращение",
@@ -53,7 +53,7 @@ const I18N = {
     contactsText: "Контакты:\n• Поддержка — через этого бота"
   },
   en: {
-    menuHeader: "This is a support bot @CalculatorTraderBot | @realChalov\n\nChoose an action:",
+    menuHeader: "This is a support bot @CalculatorTraderBot\n\nChoose an action:",
     chooseLangTitle: "Choose language:",
     chooseLangHint: "You can change it later in the menu.",
     create: "🆘 Create ticket",
